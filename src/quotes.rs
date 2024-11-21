@@ -156,9 +156,23 @@ pub struct YChart {
 }
 
 #[derive(Deserialize, Debug)]
+pub struct YChartBeforeEpoch {
+    pub result: Vec<YQuoteBlockBeforeEpoch>,
+    pub error: Option<String>,
+}
+
+#[derive(Deserialize, Debug)]
 pub struct YQuoteBlock {
     pub meta: YMetaData,
     pub timestamp: Vec<u64>,
+    pub events: Option<EventsBlock>,
+    pub indicators: QuoteBlock,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct YQuoteBlockBeforeEpoch {
+    pub meta: YMetaData,
+    pub timestamp: Vec<i64>,
     pub events: Option<EventsBlock>,
     pub indicators: QuoteBlock,
 }

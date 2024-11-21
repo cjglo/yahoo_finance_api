@@ -165,12 +165,11 @@ mod tests {
         let end = datetime!(2020-01-31 23:59:59.99 UTC);
 
         let resp = tokio_test::block_on(provider.get_quote_history("AAPL", start, end));
-        if resp.is_ok() {
-            let resp = resp.unwrap();
-            assert_eq!(resp.chart.result[0].timestamp.len(), 21);
-            let quotes = resp.quotes().unwrap();
-            assert_eq!(quotes.len(), 21);
-        }
+        assert!(resp.is_ok());
+        let resp = resp.unwrap();
+        assert_eq!(resp.chart.result[0].timestamp.len(), 21);
+        let quotes = resp.quotes().unwrap();
+        assert_eq!(quotes.len(), 21);
     }
 
     #[test]
@@ -300,5 +299,21 @@ mod tests {
         assert_eq!(&response.chart.result[0].meta.data_granularity, "1d");
         let capital_gains = response.capital_gains().unwrap();
         assert!(capital_gains.len() > 0usize);
+    }
+
+    #[test]
+    fn before_unix_epoch_interval() {
+        let provider = YahooConnector::new().unwrap();
+
+        let start = datetime!(1969-01-01 0:00:00.00 UTC);
+        let end = datetime!(1969-01-31 23:59:59.99 UTC);
+
+        let resp = tokio_test::block_on(provider.get_quote_history("XOM", start, end));
+        println!("{:?}", resp);
+        assert!(resp.is_ok());
+        let resp = resp.unwrap();
+        assert_eq!(resp.chart.result[0].timestamp.len(), 22);
+        let quotes = resp.quotes().unwrap();
+        assert_eq!(quotes.len(), 22);
     }
 }
